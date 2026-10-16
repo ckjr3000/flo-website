@@ -9,9 +9,21 @@ export const postsQuery = groq`*[_type == "post" && defined(slug.current)] | ord
 export interface Post {
   _type: 'post'
   _createdAt: string
-  title?: string
+  title: string
   slug: Slug
   excerpt?: string
   mainImage?: ImageAsset
   body: PortableTextBlock[]
+}
+
+export const homeQuery = groq`{
+  "backgroundImage": *[_type == "homePage"][0].backgroundImage.asset -> url,
+  "bio": *[_type == "homePage"][0].bio,
+  "posts": *[_type == "post" && defined(slug.current)] | order(_createdAt desc)
+}`
+
+export interface HomeData {
+  backgroundImage: ImageAsset
+  bio: Text
+  posts?: Post[]
 }
