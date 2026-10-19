@@ -25,5 +25,8 @@
   "workspaces": [
     "sveltekit-app",
     "studio"
-  ]
+  ],
+  "dependencies": {
+    "@portabletext/svelte": "^4.0.0"
+  }
 }

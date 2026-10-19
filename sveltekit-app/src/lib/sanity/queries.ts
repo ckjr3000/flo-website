@@ -24,6 +24,6 @@ export const homeQuery = groq`{
 
 export interface HomeData {
   backgroundImage: ImageAsset
-  bio: Text
+  bio: PortableTextBlock[]
   posts?: Post[]
 }

@@ -1,8 +1,11 @@
 <script lang="ts">
   import {useQuery} from '@sanity/sveltekit'
+  import { PortableText } from '@portabletext/svelte'
   import type {PageProps} from './$types'
   import type { HomeData } from '$lib/sanity/queries'
   import {urlFor} from '$lib/sanity/image'
+
+  import Nav from '../components/Nav.svelte';
 
   const {data}: PageProps = $props()
   const query = $derived(useQuery<HomeData>(data))
@@ -18,18 +21,16 @@
   class="page"
   style:background-image={bgUrl ? `url(${bgUrl})` : undefined}
 >
-  <nav>
-    <a href="/">home</a>
-    <a href="/posts">all posts</a>
-  </nav>
+
+  <Nav />
 
   <h1>Flo Christman</h1>
 
-  {#if bio}
+{#if bio?.length}
   <section id="bio">
-    {bio}
+    <PortableText value={bio} />
   </section>
-  {/if}
+{/if}
 
   {#if posts}
   <section id="latest">
@@ -50,5 +51,14 @@
     background-image: var(--bg);
     background-size: cover;
     background-position: center;
+    padding: 3%;
+  }
+
+  #bio {
+    max-width: 15vw;
+  }
+
+  #latest {
+    float: right;
   }
 </style>
