@@ -1,6 +1,7 @@
   <nav>
     <a href="/">home</a>
     <a href="/posts">all posts</a>
+    <a href="https://flow.page/flosound" target="_blank">links</a>
   </nav>
 
   <style>

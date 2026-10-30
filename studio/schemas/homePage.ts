@@ -9,12 +9,6 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
-        name: 'backgroundImage',
-        title: 'Background Image',
-        description: 'The image you want to use as your page background',
-        type: 'image'
-    }),
-    defineField({
       name: 'bio',
       title: 'Bio',
       type: 'array',
