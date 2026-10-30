@@ -3,23 +3,17 @@
   import { PortableText } from '@portabletext/svelte'
   import type {PageProps} from './$types'
   import type { HomeData } from '$lib/sanity/queries'
-  import {urlFor} from '$lib/sanity/image'
 
   import Nav from '../components/Nav.svelte';
 
   const {data}: PageProps = $props()
   const query = $derived(useQuery<HomeData>(data))
-  const bgImage = $derived($query.data?.backgroundImage)
-  const bgUrl = $derived(
-    bgImage ? urlFor(bgImage).width(1920).auto('format').url() : undefined
-  )
   const bio = $derived($query.data?.bio)
   const posts = $derived($query.data?.posts ?? [])
 </script>
 
 <div
   class="page"
-  style:background-image={bgUrl ? `url(${bgUrl})` : undefined}
 >
 
   <Nav />
@@ -55,10 +49,11 @@
 
   .page {
     height: 100vh;
+    height: 100dvh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    background-image: var(--bg);
+    background-image: url('/flo-main.webp');
     background-size: cover;
     background-position: center;
     padding: 3%;
@@ -88,6 +83,8 @@
     /* 15% of the screen on big displays, never narrower than 250px,
        so it takes a bigger share as the screen shrinks */
     width: max(15vw, 250px);
+    max-height: 100%;
+    overflow-y: auto;
   }
 
   #bio :global(p) {
@@ -111,25 +108,26 @@
     .page {
       height: auto;
       min-height: 100vh;
+      min-height: 100dvh;
     }
 
     main {
       flex-direction: column;
       align-items: stretch;
-      justify-content: flex-start; /* bio top, latest bottom */
+      justify-content: flex-start; /* stack from the top */
       gap: 20px;
     }
 
     #bio,
     #latest {
       width: 100%;
+      max-height: none;
+      overflow-y: visible;
     }
 
     #latest {
       margin-left: 0;
       align-self: stretch;
-      max-height: none;
-      overflow-y: visible;
     }
 
     #bio :global(p) {
