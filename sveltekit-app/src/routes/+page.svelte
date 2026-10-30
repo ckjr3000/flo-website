@@ -12,22 +12,20 @@
   const posts = $derived($query.data?.posts ?? [])
 </script>
 
-<div
-  class="page"
->
+<div class="page">
 
   <Nav />
 
   <main>
     {#if bio?.length}
-      <section id="bio">
+      <section class="paper" id="bio">
         <h1>Flo Christman</h1>
         <PortableText value={bio} />
       </section>
     {/if}
 
-    {#if posts}
-    <section id="latest">
+    {#if posts.length}
+    <section class="paper" id="latest">
       <h2>Latest</h2>
       {#each posts.slice(0, 4) as post}
         <div class="post">
@@ -56,7 +54,16 @@
     background-image: url('/flo-main.webp');
     background-size: cover;
     background-position: center;
-    padding: 3%;
+  }
+
+  .page::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.15;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   main {
@@ -69,33 +76,44 @@
 
   section {
     box-sizing: border-box;
-    padding: 10px;
+    padding: 15px;
     background-color: rgba(255, 255, 166, 0.6);
     border-radius: 15px;
     color: #14528f;
+    margin: 3%;
   }
 
   section > a, section > .post > a {
     color: #14528f;
   }
 
+  /* --- Bio: flows down, then wraps into new columns to the right --- */
   #bio {
-    /* 15% of the screen on big displays, never narrower than 250px,
-       so it takes a bigger share as the screen shrinks */
-    width: max(15vw, 250px);
-    max-height: 100%;
-    overflow-y: auto;
+    writing-mode: vertical-lr;      /* flips the box so it grows sideways */
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    max-height: calc(100% - 6vw);   /* full height minus the section's top/bottom margin */
+    max-width: 25vw;                /* stops it crowding out Latest */
   }
 
-  #bio :global(p) {
-    margin: 1vw 0;
+  #bio > :global(*) {
+    writing-mode: horizontal-tb;    /* text inside reads normally */
+    width: 30ch;                    /* column width */
+    margin: 0 2rem 0.8em 0;         /* space below each paragraph and between columns */
   }
 
+  #bio h1 {
+    font-size: 3rem;
+    margin-bottom: 0.3em;
+  }
+
+  /* --- Latest --- */
   #latest {
     width: max(30vw, 320px);
     margin-left: auto;
     align-self: flex-end;
-    max-height: 100%;
+    max-height: calc(100% - 6vw);
     overflow-y: auto;
   }
 
@@ -103,7 +121,6 @@
     margin-bottom: 10px;
   }
 
-  /* Stack before the two sections would collide */
   @media (max-width: 700px) {
     .page {
       height: auto;
@@ -114,24 +131,27 @@
     main {
       flex-direction: column;
       align-items: stretch;
-      justify-content: flex-start; /* stack from the top */
       gap: 20px;
     }
 
-    #bio,
+    #bio {
+      writing-mode: horizontal-tb;  /* back to a normal block on phones */
+      display: block;
+      max-height: none;
+      max-width: none;
+    }
+
+    #bio > :global(*) {
+      width: auto;
+      margin: 0 0 0.8em;
+    }
+
     #latest {
-      width: 100%;
+      width: auto;
       max-height: none;
       overflow-y: visible;
-    }
-
-    #latest {
-      margin-left: 0;
+      margin-left: 3%;
       align-self: stretch;
-    }
-
-    #bio :global(p) {
-      margin: 10px 0;
     }
   }
 </style>

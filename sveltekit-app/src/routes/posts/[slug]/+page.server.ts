@@ -1,17 +1,14 @@
-import {postQuery as query, type Post} from '$lib/sanity/queries'
-import type {PageServerLoad} from './$types'
+import { error } from '@sveltejs/kit'
+import { client } from '$lib/sanity/client'
+import { postQuery, type Post } from '$lib/sanity/queries'
+import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({locals, params}) => {
-  const {loadQuery} = locals.sanity
-  const {slug} = params
-  const initial = await loadQuery<Post>(query, {slug})
+export const load: PageServerLoad = async ({ params }) => {
+  const post = await client.fetch<Post | null>(postQuery, { slug: params.slug })
 
-  // We pass the data in a format that is easy for `useQuery` to consume in the
-  // corresponding `+page.svelte` file, but you can return the data in any
-  // format you like.
-  return {
-    query,
-    params: {slug},
-    options: {initial},
+  if (!post) {
+    error(404, 'Post not found')
   }
+
+  return { post }
 }

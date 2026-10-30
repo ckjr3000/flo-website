@@ -1,139 +1,207 @@
 <script lang="ts">
-  import {useQuery} from '@sanity/sveltekit'
-  import {PortableText} from '@portabletext/svelte'
-  import {formatDate} from '$lib/utils'
-  import {urlFor} from '$lib/sanity/image'
-  import type {PageProps} from './$types'
+  import { PortableText } from '@portabletext/svelte'
+  import { urlFor } from '$lib/sanity/image'
+  import type { PageProps } from './$types'
 
-  const {data}: PageProps = $props()
-  const query = $derived(useQuery(data))
-  const post = $derived($query.data)
+  import Nav from '../../../components/Nav.svelte'
+
+  let { data }: PageProps = $props()
+  const post = $derived(data.post)
 </script>
 
-{#if post}
-  <section class="post">
-    {#if post.mainImage}
-      <img
-        class="post__cover"
-        src={urlFor(post.mainImage).url()}
-        alt="Cover image for {post.title}"
-      />
-    {:else}
-      <div class="post__cover--none"></div>
-    {/if}
-    <div class="post__container">
-      <h1 class="post__title">{post.title}</h1>
-      {#if post.excerpt}
-        <p class="post__excerpt">{post.excerpt}</p>
-      {/if}
-      <p class="post__date">
-        {formatDate(post._createdAt)}
-      </p>
-      {#if post.body}
-        <div class="post__content">
-          <PortableText components={{}} value={post.body} />
-        </div>
-      {/if}
+<svelte:head>
+  <title>{post.title} | Flo Christman</title>
+  {#if post.excerpt}
+    <meta name="description" content={post.excerpt} />
+  {/if}
+</svelte:head>
+
+<div class="page">
+  <div class="nav">
+    <Nav />
+  </div>
+
+  <main>
+    <div class="feature-image" aria-hidden="true"></div>
+
+    <div class="content">
+      <a class="back" href="/posts">← All posts</a>
+
+      <article class="paper">
+        <header>
+          <h1>{post.title}</h1>
+          <time datetime={post._createdAt}>
+            {new Date(post._createdAt).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}
+          </time>
+        </header>
+
+        {#if post.mainImage}
+          <img
+            class="main-image"
+            src={urlFor(post.mainImage).width(1200).url()}
+            alt={post.mainImage.alt ?? ''}
+          />
+        {/if}
+
+        {#if post.body}
+          <div class="body">
+            <PortableText value={post.body} />
+          </div>
+        {/if}
+      </article>
     </div>
-  </section>
-{/if}
+  </main>
+</div>
 
 <style>
-  .post {
-    width: 100%;
-    margin: var(--space-1) 0 var(--space-4);
+  :global(html, body) {
+    margin: 0;
   }
 
-  .post .post__cover,
-  .post .post__cover--none {
-    width: 100%;
-    height: 200px;
-    -o-object-fit: cover;
-    object-fit: cover;
+  .page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(18, 77, 135);
   }
 
-  .post .post__cover--none {
-    background: var(--black);
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgba(18, 77, 135, 0.8);
   }
 
-  .post .post__container {
-    padding: 0 var(--space-3);
+  main {
+    flex: 1;
+    display: flex;
+    gap: 2vw;
+    margin: 3%
   }
 
-  .post .post__content {
-    font-family: var(--font-family-serif);
-    font-weight: 400;
-    font-size: var(--font-size-4);
-    line-height: var(--line-height-5);
-    letter-spacing: -0.02em;
-    margin-top: var(--space-6);
+  .feature-image {
+    flex: 1;
+    background-image: url('/flo-alt-dithered.webp');
+    background-size: 100% auto;
+    background-position: top center;
+    background-repeat: repeat-y;
   }
 
-  .post .post__content :global(blockquote) {
-    border-left: 5px solid var(--black);
-    padding-left: var(--space-3);
-    margin-left: var(--space-4);
+  .content {
+    width: max(45vw, 320px);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .post .post__content :global(a) {
-    color: var(--blue-600);
+  .back {
+    color: rgb(255, 255, 166);
     text-decoration: none;
   }
 
-  .post .post__title {
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-7);
-    line-height: var(--line-height-6);
-    margin: var(--space-4) 0;
-    font-weight: 800;
+  .back:hover {
+    text-decoration: underline;
   }
 
-  .post .post__excerpt {
-    font-family: var(--font-family-serif);
-    font-size: var(--font-size-5);
-    line-height: var(--line-height-4);
-    margin-top: 0;
-    font-weight: 400;
+  article {
+    box-sizing: border-box;
+    padding: clamp(15px, 3vw, 40px);
+    background-color: rgba(255, 255, 166, 0.7);
+    border-radius: 25px;
+    color: #14528f;
+    line-height: 1.6;
   }
 
-  .post .post__date {
-    font-family: var(--font-family-sans);
-    font-weight: 600;
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-1);
-    line-height: var(--line-height-1);
-    margin-top: var(--space-4);
+  header {
+    margin-bottom: 1.5rem;
   }
 
-  @media (min-width: 800px) {
-    .post .post__cover,
-    .post .post__cover--none {
-      width: 750px;
-      height: 380px;
+  h1 {
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+  }
+
+  time {
+    opacity: 0.8;
+    font-size: 0.95rem;
+  }
+
+  .main-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Portable Text output: these elements are rendered by the component,
+     so they need :global to be reached from here */
+  .body {
+    max-width: 65ch;          /* comfortable line length for reading */
+  }
+
+  .body :global(p) {
+    margin: 0 0 1.1em;
+  }
+
+  .body :global(h2),
+  .body :global(h3) {
+    margin: 2em 0 0.5em;
+    line-height: 1.25;
+  }
+
+  .body :global(a) {
+    color: #14528f;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  .body :global(blockquote) {
+    margin: 1.5em 0;
+    padding-left: 1em;
+    border-left: 4px solid #14528f;
+    font-style: italic;
+  }
+
+  .body :global(ul),
+  .body :global(ol) {
+    padding-left: 1.25em;
+    margin: 0 0 1.1em;
+  }
+
+  .body :global(li) {
+    margin-bottom: 0.4em;
+  }
+
+  .body :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1.5em 0;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .post .post__title {
-      font-size: var(--font-size-10);
-      line-height: var(--line-height-10);
-      margin: var(--space-6) 0 0;
-      letter-spacing: -0.025em;
+    .feature-image {
+      flex: none;
+      height: 35vh;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
-    .post .post__excerpt {
-      font-size: var(--font-size-5);
-      line-height: var(--line-height-5);
-      margin-top: var(--space-3);
-      margin-bottom: var(--space-3);
-    }
-
-    .post .post__date {
-      font-size: var(--font-size-3);
-      line-height: var(--line-height-2);
-      margin-top: var(--space-0);
-    }
-
-    .post .post__content {
-      margin-top: var(--space-7);
+    .content {
+      width: 100%;
     }
   }
 </style>
