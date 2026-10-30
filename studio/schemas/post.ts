@@ -33,6 +33,22 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for people using screen readers.',
+          validation: (Rule) =>
+            Rule.custom((alt, context) => {
+              const image = context.parent as {asset?: unknown} | undefined
+              if (image?.asset && !alt) {
+                return 'Alt text is required when an image is added'
+              }
+              return true
+            }),
+        }),
+      ],
     }),
     defineField({
       name: 'body',
