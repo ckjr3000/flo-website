@@ -4,6 +4,9 @@
   import type { PageProps } from './$types'
 
   import Nav from '../../../components/Nav.svelte'
+  import BodyImage from '../../../components/BodyImage.svelte'
+  import BodyPdf from '../../../components/BodyPdf.svelte'
+  import BodyEmbed from '../../../components/BodyEmbed.svelte'
 
   let { data }: PageProps = $props()
   const post = $derived(data.post)
@@ -49,7 +52,10 @@
 
         {#if post.body}
           <div class="body">
-            <PortableText value={post.body} />
+            <PortableText
+              value={post.body}
+              components={{ types: { image: BodyImage, pdf: BodyPdf, embed: BodyEmbed } }}
+            />
           </div>
         {/if}
       </article>

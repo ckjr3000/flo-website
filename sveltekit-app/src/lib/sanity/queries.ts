@@ -1,7 +1,16 @@
 import type { Image, PortableTextBlock, Slug } from '@sanity/types'
 import groq from 'groq'
 
-export const postQuery = groq`*[_type == "post" && slug.current == $slug][0]`
+export const postQuery = groq`*[_type == "post" && slug.current == $slug][0]{
+  ...,
+  body[]{
+    ...,
+    _type == "pdf" => {
+      "url": asset->url,
+      "filename": asset->originalFilename
+    }
+  }
+}`
 
 export const postsQuery = groq`*[_type == "post" && defined(slug.current)] | order(_createdAt desc)`
 
