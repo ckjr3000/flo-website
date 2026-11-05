@@ -27,6 +27,27 @@ nav a {
   color: white;
 }
 
+#latest h2 {
+  margin: 0 0 0.5em;
+}
+
+#latest .post {
+  margin-bottom: 1em;
+}
+
+#latest .post:last-child {
+  margin-bottom: 0;
+}
+
+#latest h3 {
+  margin: 0 0 0.25em;
+}
+
+#latest p {
+  margin: 0 0 0.4em;
+  line-height: 1.4;
+}
+
 .paper {
   position: relative;
   isolation: isolate;     /* keeps the blend effects contained to this box */
