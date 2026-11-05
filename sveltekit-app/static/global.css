@@ -23,6 +23,10 @@ a {
   color: inherit;
 }
 
+nav a {
+  color: white;
+}
+
 .paper {
   position: relative;
   isolation: isolate;     /* keeps the blend effects contained to this box */
